@@ -1,0 +1,25 @@
+server:
+  port: 8082
+
+remote-agent:
+  token: 360_tenant_1701393128730
+  agent-name: FileFlow
+  grpc-server:
+    host: localhost
+    port: 50052
+    timeouts:
+      configure-connector-form-rpc: 120
+      share-document-metadata-rpc: 30
+      share-documents-rpc: 120
+      validate-agent-token-rpc: 60
+  server-url: http://localhost:8080/3sixty-admin
+  ssl-config:
+    ca-certs:
+      password: changeit
+    enabled: false
+
+logging:
+  level:
+    com.objective.threesixty:
+      remoteagent.sdk: TRACE
+      agent: TRACE
