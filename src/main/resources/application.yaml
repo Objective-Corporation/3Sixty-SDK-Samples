@@ -11,15 +11,17 @@ remote-agent:
       configure-connector-form-rpc: 120
       share-document-metadata-rpc: 30
       share-documents-rpc: 120
+      share-document-rpc: 60
+      send-deletion-response-rpc: 60
       validate-agent-token-rpc: 60
   server-url: http://localhost:8080/3sixty-admin
   ssl-config:
     ca-certs:
       password: changeit
-    enabled: false
+    enabled: true
 
 logging:
   level:
     com.objective.threesixty:
-      remoteagent.sdk: TRACE
-      agent: TRACE
+      remoteagent.sdk: INFO
+      agent: INFO

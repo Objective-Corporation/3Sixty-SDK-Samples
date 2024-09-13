@@ -39,9 +39,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class FileSystemConnectorFormTest {
 
     @Test
-    void getFields() {
+    void getSourceRepositoryFields() {
         FileSystemConnectorForm fileSystemConnectorForm = new FileSystemConnectorForm();
-        List<Field> fields = fileSystemConnectorForm.getFields();
+        List<Field> fields = fileSystemConnectorForm.getSourceRepositoryFields();
         FormConfigRequest formConfig = FormConfigRequest.newBuilder().addAllRepoFields(fields).build();
 
         assertNotNull(fields);
@@ -50,5 +50,18 @@ class FileSystemConnectorFormTest {
         Field field = formConfig.getRepoFields(0);
         assertEquals("File Path", field.getLabel());
         assertEquals("filePath", field.getId());
+    }
+
+    @Test
+    void getContentServiceConnectorFields() {
+        FileSystemConnectorForm fileSystemConnectorForm = new FileSystemConnectorForm();
+        List<Field> fields = fileSystemConnectorForm.getContentServiceFields();
+        FormConfigRequest formConfig = FormConfigRequest.newBuilder().addAllContentServiceFields(fields).build();
+
+        assertNotNull(fields);
+        assertNotNull(formConfig);
+        assertNotEquals(0, formConfig.getContentServiceFieldsList().size());
+        Field field = formConfig.getContentServiceFields(0);
+        assertEquals("toggleCheckbox", field.getId());
     }
 }

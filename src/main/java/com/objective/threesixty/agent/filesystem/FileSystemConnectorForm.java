@@ -26,7 +26,9 @@ package com.objective.threesixty.agent.filesystem;
  * %-
  */
 
+import com.objective.threesixty.CheckboxField;
 import com.objective.threesixty.Field;
+import com.objective.threesixty.NumberField;
 import com.objective.threesixty.TextField;
 import com.objective.threesixty.remoteagent.sdk.agent.ConnectorForm;
 import org.springframework.stereotype.Component;
@@ -35,9 +37,8 @@ import java.util.List;
 
 @Component
 public class FileSystemConnectorForm implements ConnectorForm {
-
     @Override
-    public List<Field> getFields() {
+    public List<Field> getSourceRepositoryFields() {
         // File Path
         Field filePath = Field.newBuilder()
                 .setLabel("File Path")
@@ -46,5 +47,28 @@ public class FileSystemConnectorForm implements ConnectorForm {
                 .build();
 
         return List.of(filePath);
+    }
+
+    @Override
+    public List<Field> getContentServiceFields() {
+        Field toggleCheckbox = Field.newBuilder()
+                .setLabel("Show/Hide Text field")
+                .setDescription("Toggles Text field")
+                .setId("toggleCheckbox")
+                .setCheckboxField(CheckboxField.newBuilder().setValue(false).build())
+                .build();
+        Field textField = Field.newBuilder()
+                .setLabel("Text field")
+                .setId("textField")
+                .setDependsOn(toggleCheckbox.getId())
+                .setTextField(TextField.newBuilder().build())
+                .build();
+        Field numberField = Field.newBuilder()
+                .setLabel("Number field")
+                .setId("numberField")
+                .setNumberField(NumberField.newBuilder().build())
+                .setDependsOn("noMatchingId")
+                .build();
+        return List.of(toggleCheckbox, textField, numberField);
     }
 }

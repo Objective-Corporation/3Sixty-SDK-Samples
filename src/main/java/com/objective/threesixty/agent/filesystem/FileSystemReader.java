@@ -35,40 +35,47 @@ import com.objective.threesixty.remoteagent.sdk.utils.CustomParameters;
 import com.objective.threesixty.remoteagent.sdk.utils.ReaderUtils;
 import org.springframework.stereotype.Component;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Component
 public class FileSystemReader implements Reader {
-    private final Map<String, Map<String, Map<String, MetadataType>>> docMetadataByPath = new ConcurrentHashMap<>();
-    private final Map<String, Map<String, BinaryDetails>> docBinaryByPath = new ConcurrentHashMap<>();
-
     //Not needed for this implementation
     @Override
     public void init(CustomParameters parameters) {
     }
 
     @Override
-    public Map<String, MetadataType> getDocumentMetadata(String docId, CustomParameters parameters) {
-        String filePath = parameters.get("filePath").getString();
-        return docMetadataByPath.get(filePath).remove(docId);
+    public Document getDocument(String docId, CustomParameters parameters) {
+        return documentFromPath(Paths.get(docId), parameters);
+    }
+
+    @Override
+    public Map<String, MetadataType> getDocumentMetadata(String docId, CustomParameters parameters) throws IOException {
+        Path path = Paths.get(docId);
+        Map<String, MetadataType> metadata = new ConcurrentHashMap<>();
+        metadata.put("fileName", MetadataType.newBuilder().setString(path.getFileName().toString()).build());
+        metadata.put("fileSize", MetadataType.newBuilder().setLong(Files.size(path)).build());
+        return metadata;
     }
 
     @Override
     public Stream<Document> getDocuments(CustomParameters parameters) throws Exception {
         String filePath = parameters.get("filePath").getString();
         Path directory = Paths.get(filePath);
+
+        if (!Files.isDirectory(directory)) {
+            return Stream.of(documentFromPath(directory, parameters)).filter(Objects::nonNull);
+        }
 
         DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory);
         Stream<Path> pathStream = StreamSupport.stream(directoryStream.spliterator(), false);
@@ -78,80 +85,83 @@ public class FileSystemReader implements Reader {
                     try {
                         directoryStream.close();
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new UncheckedIOException(e);
                     }
                 })
-                .map(path -> {
-                    BasicFileAttributes attributes;
-                    try {
-                        attributes = Files.readAttributes(path, BasicFileAttributes.class);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    // remove drive letter from parent path. specific to Windows FileSystem implementations
-                    String root = null != path.getRoot() ? path.getRoot().toString() : "";
-                    String parentPath = null != path.getParent() ? path.getParent().toString() : "";
-                    parentPath = parentPath.replace(root, "");
-                    if (!parentPath.startsWith("\\")) {
-                        parentPath = "\\" + parentPath;
-                    }
-
-                    Document doc = Document.newBuilder()
-                            .setId(path.toString())
-                            .setName(path.getFileName().toString())
-                            .setCreatedDate(ReaderUtils.fromInstant(attributes.creationTime().toInstant()))
-                            .setModifiedDate(ReaderUtils.fromInstant(attributes.creationTime().toInstant()))
-                            .setMimeType(ReaderUtils.getMimeTypeForFileName(path.getFileName().toString()))
-                            .setSize(attributes.size())
-                            .setParentPath(parentPath)
-                            .build();
-                    try {
-                        if (parameters.getIncludeBinaries()) {
-                            generateBinaryMap(filePath, path);
-                        }
-
-                        generateMetadataMap(filePath, path);
-                    } catch (Exception e) {
-                        getLogger().error("Error accessing directory", e);
-                    }
-
-                    return doc;
-                });
+                .map((path -> documentFromPath(path, parameters)))
+                .filter(Objects::nonNull);
     }
 
     @Override
     public BinaryDetails getDocumentBinary(String docId, CustomParameters parameters) {
-        String filePath = parameters.get("filePath").getString();
-        BinaryDetails bd = docBinaryByPath.get(filePath).remove(docId);
-
+        Path path = Paths.get(docId);
+        BinaryDetails bd = new BinaryDetails(docId, InputStream.nullInputStream(), ReaderUtils.getMimeTypeForFileName(path.getFileName().toString()));
         try {
-            bd.setInputStream(getFileInputStream(bd.getDocumentId()));
+            bd.setInputStream(getFileInputStream(docId));
         } catch (FileNotFoundException e) {
             bd.setInputStream(InputStream.nullInputStream());
             getLogger().error("Error accessing directory " + docId + " when getting binary details. Setting InputStream to nullInputStream.", e);
         }
-
         return bd;
+    }
+
+    @Override
+    public void deleteDocument(String docId, CustomParameters parameters) throws Exception {
+        getLogger().info("Attempting to delete " + docId);
+        //deleteAllVersions() reference to the allVersions parameter in 3Sixty's delete document REST API method.
+        //Not very useful in a file system scenario, but it is always present for this method.
+        getLogger().debug("Delete All Versions: " + parameters.deleteAllVersions());
+        File document = new File(docId);
+
+        try {
+            Files.delete(document.toPath());
+            getLogger().debug("Deleted " + docId);
+        } catch (Exception e) {
+            getLogger().error("Could not delete " + docId + ":\n" + e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private Document documentFromPath(Path path, CustomParameters parameters) {
+        BasicFileAttributes attributes;
+        try {
+            attributes = Files.readAttributes(path, BasicFileAttributes.class);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        if (!inRange(attributes.lastModifiedTime().toMillis(), parameters)) {
+            return null;
+        }
+
+        // remove drive letter from parent path. specific to Windows FileSystem implementations
+        String root = Objects.toString(path.getRoot(), "");
+        String parentPath = Objects.toString(path.getParent(), "");
+        parentPath = parentPath.replace(root, "");
+
+        if (!parentPath.startsWith(File.separator)) {
+            parentPath = File.separator + parentPath;
+        }
+
+        String docId = path.toString();
+
+        return Document.newBuilder()
+                .setId(docId)
+                .setName(path.getFileName().toString())
+                .setCreatedDate(ReaderUtils.fromInstant(attributes.creationTime().toInstant()))
+                .setModifiedDate(ReaderUtils.fromInstant(attributes.creationTime().toInstant()))
+                .setMimeType(ReaderUtils.getMimeTypeForFileName(path.getFileName().toString()))
+                .setSize(attributes.size())
+                .setParentPath(parentPath)
+                .build();
+    }
+
+    private boolean inRange(long lastModifiedTime, CustomParameters parameters) {
+        return lastModifiedTime >= parameters.getStartTimeOfDateFilter() && lastModifiedTime <= parameters.getEndTimeOfDateFilter();
     }
 
     @VisibleForTesting
     InputStream getFileInputStream(String docId) throws FileNotFoundException {
         return new FileInputStream(Path.of(docId).toFile());
-    }
-
-    private void generateMetadataMap(String filePath, Path file) throws IOException {
-        Map<String, MetadataType> metadata = new ConcurrentHashMap<>();
-        metadata.put("fileName", MetadataType.newBuilder().setString(file.getFileName().toString()).build());
-        metadata.put("fileSize", MetadataType.newBuilder().setLong(Files.size(file)).build());
-
-        Map<String, Map<String, MetadataType>> metadataByDocId = docMetadataByPath.computeIfAbsent(filePath, v -> new ConcurrentHashMap<>());
-        metadataByDocId.put(file.toString(), metadata);
-    }
-
-    private void generateBinaryMap(String filePath, Path path) {
-        BinaryDetails binaryDetails = new BinaryDetails(path.toString(), InputStream.nullInputStream(), ReaderUtils.getMimeTypeForFileName(path.getFileName().toString()));
-        Map<String, BinaryDetails> binaryDetailsByDocId = docBinaryByPath.computeIfAbsent(filePath, v -> new ConcurrentHashMap<>());
-        binaryDetailsByDocId.put(path.toString(), binaryDetails);
     }
 }
