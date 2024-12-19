@@ -46,19 +46,9 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
 
-        <sonar.host.url>https://sonar.core.objective.com/</sonar.host.url>
-        <sonar.jacoco.coveragePlugin>jacoco</sonar.jacoco.coveragePlugin>
-
         <threesixty.sdk.version>1.2.0</threesixty.sdk.version>
         <java.version>17</java.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>gitlab-maven</id>
-            <url>https://git.core.objective.com/api/v4/groups/237/-/packages/maven</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -146,46 +136,6 @@
                             <haltOnFailure>false</haltOnFailure>
                             <rules>
                             </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- sonar plugin -->
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.6.0.1398</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>2.4.0</version>
-                <configuration>
-                    <emptyLineAfterHeader>true</emptyLineAfterHeader> <!-- Places an empty line after the header -->
-                    <canUpdateCopyright>true</canUpdateCopyright> <!-- Allows update of copyright year/owner -->
-                    <sectionDelimiter>-</sectionDelimiter> <!-- Delimiter between sections -->
-                    <processStartTag>%%</processStartTag> <!-- a start tag used by the plugin. necessary -->
-                    <processEndTag>%-</processEndTag> <!-- a start tag used by the plugin. necessary -->
-                    <failOnNotUptodateHeader>true
-                    </failOnNotUptodateHeader> <!-- Forces the plugin to fail is a file is not updated when it's supposed to be -->
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>first</id>
-                        <goals>
-                            <goal>update-file-header</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <licenseName>mit</licenseName>
-                            <organizationName>Objective Corporation Limited.</organizationName>
-                            <inceptionYear>2024</inceptionYear>
-                            <roots>
-                                <root>src/main/java</root>
-                                <root>src/test</root>
-                            </roots>
                         </configuration>
                     </execution>
                 </executions>
