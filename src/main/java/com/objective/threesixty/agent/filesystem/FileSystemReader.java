@@ -30,9 +30,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.objective.threesixty.Document;
 import com.objective.threesixty.MetadataType;
 import com.objective.threesixty.remoteagent.sdk.BinaryDetails;
-import com.objective.threesixty.remoteagent.sdk.agent.Reader;
+import com.objective.threesixty.remoteagent.sdk.agent.RepositoryReader;
 import com.objective.threesixty.remoteagent.sdk.utils.CustomParameters;
-import com.objective.threesixty.remoteagent.sdk.utils.ReaderUtils;
+import com.objective.threesixty.remoteagent.sdk.utils.RepositoryUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -48,7 +48,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Component
-public class FileSystemReader implements Reader {
+public class FileSystemReader implements RepositoryReader {
     //Not needed for this implementation
     @Override
     public void init(CustomParameters parameters) {
@@ -95,7 +95,7 @@ public class FileSystemReader implements Reader {
     @Override
     public BinaryDetails getDocumentBinary(String docId, CustomParameters parameters) {
         Path path = Paths.get(docId);
-        BinaryDetails bd = new BinaryDetails(docId, InputStream.nullInputStream(), ReaderUtils.getMimeTypeForFileName(path.getFileName().toString()));
+        BinaryDetails bd = new BinaryDetails(docId, InputStream.nullInputStream(), RepositoryUtils.getMimeTypeForFileName(path.getFileName().toString()));
         try {
             bd.setInputStream(getFileInputStream(docId));
         } catch (FileNotFoundException e) {
@@ -148,9 +148,9 @@ public class FileSystemReader implements Reader {
         return Document.newBuilder()
                 .setId(docId)
                 .setName(path.getFileName().toString())
-                .setCreatedDate(ReaderUtils.fromInstant(attributes.creationTime().toInstant()))
-                .setModifiedDate(ReaderUtils.fromInstant(attributes.creationTime().toInstant()))
-                .setMimeType(ReaderUtils.getMimeTypeForFileName(path.getFileName().toString()))
+                .setCreatedDate(RepositoryUtils.fromInstant(attributes.creationTime().toInstant()))
+                .setModifiedDate(RepositoryUtils.fromInstant(attributes.creationTime().toInstant()))
+                .setMimeType(RepositoryUtils.getMimeTypeForFileName(path.getFileName().toString()))
                 .setSize(attributes.size())
                 .setParentPath(parentPath)
                 .build();

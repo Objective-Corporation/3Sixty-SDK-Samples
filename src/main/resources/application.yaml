@@ -10,10 +10,12 @@ remote-agent:
     timeouts:
       configure-connector-form-rpc: 120
       share-document-metadata-rpc: 30
-      share-documents-rpc: 120
+      share-documents-rpc: 300
       share-document-rpc: 60
       send-deletion-response-rpc: 60
       validate-agent-token-rpc: 60
+      write-document-request-rpc: 30
+      get-extended-document-rpc: 30
   server-url: http://localhost:8080/3sixty-admin
   ssl-config:
     ca-certs:

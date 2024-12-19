@@ -53,6 +53,20 @@ class FileSystemConnectorFormTest {
     }
 
     @Test
+    void getOutputRepositoryFields() {
+        FileSystemConnectorForm fileSystemConnectorForm = new FileSystemConnectorForm();
+        List<Field> fields = fileSystemConnectorForm.getOutputRepositoryFields();
+        FormConfigRequest formConfig = FormConfigRequest.newBuilder().addAllOutputFields(fields).build();
+
+        assertNotNull(fields);
+        assertNotNull(formConfig);
+        assertNotEquals(0, formConfig.getOutputFieldsList().size());
+        Field field = formConfig.getOutputFields(0);
+        assertEquals("Output File Path", field.getLabel());
+        assertEquals("filePath", field.getId());
+    }
+
+    @Test
     void getContentServiceConnectorFields() {
         FileSystemConnectorForm fileSystemConnectorForm = new FileSystemConnectorForm();
         List<Field> fields = fileSystemConnectorForm.getContentServiceFields();

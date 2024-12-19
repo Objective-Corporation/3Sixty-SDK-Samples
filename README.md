@@ -53,7 +53,7 @@ Our Remote Agent SDK is built using Java, so you'll need Java 17+ to build a cus
 
 7. Configure the connector. Read the readme to understand how to configure the connector. [Example](#configuring-the-connector)
 
-8. Implement Reader interface of SDK. For reference see theFileSystemReader.
+8. Implement RepositoryReader and RepositoryWriter interfaces of SDK. For reference see the FileSystemReader and FileSystemWriter.
 
 9. Run the application in Maven. When you run your application, it will connect with 3Sixty-server. [Example](#running-the-remote-agent)
 
@@ -136,6 +136,8 @@ Our Remote Agent SDK is built using Java, so you'll need Java 17+ to build a cus
             - `share-document-rpc:` Maximum wait time for sending a document from the repository
             - `send-deletion-response-rpc:` Maximum wait time for deleting a document from the repository
             - `validate-agent-token-rpc:` Maximum wait time for validating remote agent tokens
+            - `write-document-request-rpc`: Maximum wait time for the remote agent to send the written document details back to 3Sixty
+            - `get-extended-document-rpc`: Maximum wait time for the remote agent to get the document and its metadata from cached document from the source repository
     - `server-url:` REST URL to connect with the 3Sixty server, including the protocol
     - `ssl-config:`
         - `ca-certs:`
@@ -149,8 +151,10 @@ Contact the 3Sixty team to get the host, port and url.
     - See the *Application.java* file for reference.
 4. Implement the SDK's *ConnectorForm.java* interface.
     - See the *FileSystemConnectorForm.java* for reference.
-5. Then implement the SDK'S *Reader.java* interface.
+5. Then implement the SDK'S *RepositoryReader.java* interface.
     - See the *FileSystemReader.java* for reference.
+6. Also implement the SDK's *RepositoryWriter.java* interface
+    - See the *FileSystemWriter.java* for reference
 
 ## Configuring the Connector
 
@@ -158,7 +162,7 @@ In the implementation of the `ConnectorForm.java` interface, you can configure t
 
 ```    
 @Override
-public List<Field> getFields() {
+public List<Field> getSourceRepositoryFields() {
     // File Path
     Field filePath = Field.newBuilder()
             .setLabel("File Path")
@@ -168,6 +172,17 @@ public List<Field> getFields() {
     return List.of(filePath);
 }
 
+@Override
+public List<Field> getOutputRepositoryFields() {
+    // File Path
+    Field filePath = Field.newBuilder()
+        .setLabel("Output File Path")
+        .setId("filePath")
+        .setTextField(TextField.newBuilder().build())
+        .build();
+    return List.of(filePath);
+}
+    
 @Override
 public List<Field> getContentServiceFields() {
     //Custom Fields
@@ -187,8 +202,8 @@ public List<Field> getContentServiceFields() {
 }
 ```
 
-In the above code, we are configuring a **Text Field** to create a File Path in 3Sixty Server. We are also adding a 
-pair of fields to the Content Service custom fields. The first field creates a checkbox. The second creates a 
+In the above code, we are configuring a **Text Field** to create a File Path in 3Sixty Server for both the source, and output job repositories. 
+We are also adding a pair of fields to the Content Service custom fields. The first field creates a checkbox. The second creates a 
 string field that can be shown/hidden using the checkbox.
 
 ## Running the Remote Agent

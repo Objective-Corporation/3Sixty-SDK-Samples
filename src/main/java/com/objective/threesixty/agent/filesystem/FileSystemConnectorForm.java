@@ -41,34 +41,50 @@ public class FileSystemConnectorForm implements ConnectorForm {
     public List<Field> getSourceRepositoryFields() {
         // File Path
         Field filePath = Field.newBuilder()
-                .setLabel("File Path")
-                .setId("filePath")
-                .setTextField(TextField.newBuilder().build())
-                .build();
+            .setLabel("File Path")
+            .setId("filePath")
+            .setTextField(TextField.newBuilder().build())
+            .build();
 
         return List.of(filePath);
     }
 
     @Override
+    public List<Field> getOutputRepositoryFields() {
+        // File Path
+        Field filePath = Field.newBuilder()
+            .setLabel("Output File Path")
+            .setId("filePath")
+            .setTextField(TextField.newBuilder().build())
+            .build();
+        Field metadataAsXml = Field.newBuilder()
+            .setLabel("Output Metadata as XML")
+            .setId("metadataAsXml")
+            .setCheckboxField(CheckboxField.newBuilder().setValue(true).build())
+            .build();
+        return List.of(filePath, metadataAsXml);
+    }
+
+    @Override
     public List<Field> getContentServiceFields() {
         Field toggleCheckbox = Field.newBuilder()
-                .setLabel("Show/Hide Text field")
-                .setDescription("Toggles Text field")
-                .setId("toggleCheckbox")
-                .setCheckboxField(CheckboxField.newBuilder().setValue(false).build())
-                .build();
+            .setLabel("Show/Hide Text field")
+            .setDescription("Toggles Text field")
+            .setId("toggleCheckbox")
+            .setCheckboxField(CheckboxField.newBuilder().setValue(false).build())
+            .build();
         Field textField = Field.newBuilder()
-                .setLabel("Text field")
-                .setId("textField")
-                .setDependsOn(toggleCheckbox.getId())
-                .setTextField(TextField.newBuilder().build())
-                .build();
+            .setLabel("Text field")
+            .setId("textField")
+            .setDependsOn(toggleCheckbox.getId())
+            .setTextField(TextField.newBuilder().build())
+            .build();
         Field numberField = Field.newBuilder()
-                .setLabel("Number field")
-                .setId("numberField")
-                .setNumberField(NumberField.newBuilder().build())
-                .setDependsOn("noMatchingId")
-                .build();
+            .setLabel("Number field")
+            .setId("numberField")
+            .setNumberField(NumberField.newBuilder().build())
+            .setDependsOn("noMatchingId")
+            .build();
         return List.of(toggleCheckbox, textField, numberField);
     }
 }
