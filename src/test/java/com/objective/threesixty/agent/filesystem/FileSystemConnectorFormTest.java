@@ -4,7 +4,7 @@ package com.objective.threesixty.agent.filesystem;
  * %%
  * 3Sixty Remote Agent Example
  * -
- * Copyright (C) 2024 Objective Corporation Limited.
+ * Copyright (C) 2024 - 2025 Objective Corporation Limited.
  * -
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -4,7 +4,7 @@ package com.objective.threesixty.agent.filesystem;
  * %%
  * 3Sixty Remote Agent Example
  * -
- * Copyright (C) 2024 Objective Corporation Limited.
+ * Copyright (C) 2024 - 2025 Objective Corporation Limited.
  * -
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -240,7 +240,7 @@ class FileSystemReaderTest {
 
         try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.delete(Paths.get(docId)))
-                    .thenThrow(new IOException("Fake file in use exception"));
+                .thenThrow(new IOException("Fake file in use exception"));
 
             Exception exception = assertThrows(IOException.class, () -> fileSystemReader.deleteDocument(docId, customParameters));
             assertTrue(exception.getMessage().contains("Fake file in use exception"));
@@ -255,7 +255,7 @@ class FileSystemReaderTest {
 
         try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.delete(Paths.get(docId)))
-                    .thenThrow(new SecurityException("Delete operation not allowed"));
+                .thenThrow(new SecurityException("Delete operation not allowed"));
 
             Exception exception = assertThrows(SecurityException.class, () -> fileSystemReader.deleteDocument(docId, customParameters));
             assertTrue(exception.getMessage().contains("Delete operation not allowed"));

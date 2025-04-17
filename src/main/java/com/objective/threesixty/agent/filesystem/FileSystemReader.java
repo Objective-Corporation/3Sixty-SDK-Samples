@@ -4,7 +4,7 @@ package com.objective.threesixty.agent.filesystem;
  * %%
  * 3Sixty Remote Agent Example
  * -
- * Copyright (C) 2024 Objective Corporation Limited.
+ * Copyright (C) 2024 - 2025 Objective Corporation Limited.
  * -
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,15 +81,15 @@ public class FileSystemReader implements RepositoryReader {
         Stream<Path> pathStream = StreamSupport.stream(directoryStream.spliterator(), false);
 
         return pathStream
-                .onClose(() -> { // close the directoryStream when all the paths have been processed
-                    try {
-                        directoryStream.close();
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                })
-                .map((path -> documentFromPath(path, parameters)))
-                .filter(Objects::nonNull);
+            .onClose(() -> { // close the directoryStream when all the paths have been processed
+                try {
+                    directoryStream.close();
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            })
+            .map((path -> documentFromPath(path, parameters)))
+            .filter(Objects::nonNull);
     }
 
     @Override
@@ -146,14 +146,14 @@ public class FileSystemReader implements RepositoryReader {
         String docId = path.toString();
 
         return Document.newBuilder()
-                .setId(docId)
-                .setName(path.getFileName().toString())
-                .setCreatedDate(RepositoryUtils.fromInstant(attributes.creationTime().toInstant()))
-                .setModifiedDate(RepositoryUtils.fromInstant(attributes.creationTime().toInstant()))
-                .setMimeType(RepositoryUtils.getMimeTypeForFileName(path.getFileName().toString()))
-                .setSize(attributes.size())
-                .setParentPath(parentPath)
-                .build();
+            .setId(docId)
+            .setName(path.getFileName().toString())
+            .setCreatedDate(RepositoryUtils.fromInstant(attributes.creationTime().toInstant()))
+            .setModifiedDate(RepositoryUtils.fromInstant(attributes.creationTime().toInstant()))
+            .setMimeType(RepositoryUtils.getMimeTypeForFileName(path.getFileName().toString()))
+            .setSize(attributes.size())
+            .setParentPath(parentPath)
+            .build();
     }
 
     private boolean inRange(long lastModifiedTime, CustomParameters parameters) {
