@@ -12,10 +12,10 @@ package com.objective.threesixty.agent.filesystem;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,6 +30,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Timestamp;
 import com.objective.threesixty.Document;
 import com.objective.threesixty.MetadataType;
+import com.objective.threesixty.remoteagent.sdk.agent.AuthConnection;
 import com.objective.threesixty.remoteagent.sdk.agent.RepositoryWriter;
 import com.objective.threesixty.remoteagent.sdk.utils.CustomParameters;
 import io.micrometer.common.util.StringUtils;
@@ -58,7 +59,7 @@ import java.util.regex.Pattern;
 @Component
 public class FileSystemWriter implements RepositoryWriter {
     @Override
-    public Mono<Document> writeDocument(Document doc, Map<String, MetadataType> metadata, Flux<DataBuffer> binaries, CustomParameters params) {
+    public Mono<Document> writeDocument(Document doc, Map<String, MetadataType> metadata, Flux<DataBuffer> binaries, CustomParameters params, AuthConnection authConn) {
         File outputFile = createOutputFile(doc, params);
 
         return Mono.fromCallable(() -> ensureFileExists(outputFile))

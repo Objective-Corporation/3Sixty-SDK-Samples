@@ -76,7 +76,7 @@ class FileSystemWriterTest {
             new DefaultDataBufferFactory().wrap("abc".getBytes(StandardCharsets.UTF_8))
         );
         Document sourceDoc = createDocument();
-        Document result = writer.writeDocument(sourceDoc, createMetadata(), dataBufferFlux, customParameters).block();
+        Document result = writer.writeDocument(sourceDoc, createMetadata(), dataBufferFlux, customParameters, null).block();
         String newPath = Paths.get(
             customParameters.get("filePath").getString(),
             writer.sanitizePath(sourceDoc.getParentPath())

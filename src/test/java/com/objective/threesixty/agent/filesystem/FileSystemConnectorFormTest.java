@@ -46,7 +46,7 @@ class FileSystemConnectorFormTest {
 
         assertNotNull(fields);
         assertNotNull(formConfig);
-        assertNotEquals(0, formConfig.getRepoFieldsList().size());
+        assertNotEquals(0, formConfig.getRepoFieldsCount());
         Field field = formConfig.getRepoFields(0);
         assertEquals("File Path", field.getLabel());
         assertEquals("filePath", field.getId());
@@ -60,7 +60,7 @@ class FileSystemConnectorFormTest {
 
         assertNotNull(fields);
         assertNotNull(formConfig);
-        assertNotEquals(0, formConfig.getOutputFieldsList().size());
+        assertNotEquals(0, formConfig.getOutputFieldsCount());
         Field field = formConfig.getOutputFields(0);
         assertEquals("Output File Path", field.getLabel());
         assertEquals("filePath", field.getId());
@@ -74,8 +74,34 @@ class FileSystemConnectorFormTest {
 
         assertNotNull(fields);
         assertNotNull(formConfig);
-        assertNotEquals(0, formConfig.getContentServiceFieldsList().size());
+        assertNotEquals(0, formConfig.getContentServiceFieldsCount());
         Field field = formConfig.getContentServiceFields(0);
         assertEquals("toggleCheckbox", field.getId());
+    }
+
+    @Test
+    void getAuthConnectionFields() {
+        FileSystemConnectorForm fileSystemConnectorForm = new FileSystemConnectorForm();
+        List<Field> fields = fileSystemConnectorForm.getAuthConnectionFields();
+        FormConfigRequest formConfig = FormConfigRequest.newBuilder().addAllAuthConnFields(fields).build();
+
+        assertNotNull(fields);
+        assertNotNull(formConfig);
+        assertEquals(1, formConfig.getAuthConnFieldsCount());
+        Field field = formConfig.getAuthConnFields(0);
+        assertEquals("textField", field.getId());
+    }
+
+    @Test
+    void getSearchConnectionFields() {
+        FileSystemConnectorForm fileSystemConnectorForm = new FileSystemConnectorForm();
+        List<Field> fields = fileSystemConnectorForm.getSearchConnectionFields();
+        FormConfigRequest formConfig = FormConfigRequest.newBuilder().addAllSearchConnFields(fields).build();
+
+        assertNotNull(fields);
+        assertNotNull(formConfig);
+        assertEquals(1, formConfig.getSearchConnFieldsCount());
+        Field field = formConfig.getSearchConnFields(0);
+        assertEquals("textField", field.getId());
     }
 }

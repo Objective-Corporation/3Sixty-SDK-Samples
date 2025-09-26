@@ -1,4 +1,4 @@
-package com.objective.threesixty.agent;
+package com.objective.threesixty.agent.filesystem;
 
 /*-
  * %%
@@ -12,10 +12,10 @@ package com.objective.threesixty.agent;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,14 +26,26 @@ package com.objective.threesixty.agent;
  * %-
  */
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import com.objective.threesixty.remoteagent.sdk.agent.AuthConnection;
+import com.objective.threesixty.remoteagent.sdk.agent.AuthConnectionFactory;
+import lombok.Getter;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication
-@ComponentScan(basePackages = {"com.objective.threesixty", "com.objective.threesixty.remoteagent.sdk"})
-public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Component
+public class FileSystemAuthConnFactory implements AuthConnectionFactory {
+    @Getter
+    private final Set<AuthConnection> authConnections = ConcurrentHashMap.newKeySet();
+
+    public void register(AuthConnection connector) {
+        authConnections.add(connector);
+    }
+
+    @Override
+    public String checkConnection(AuthConnection conn) {
+        register(conn);
+        return "";
     }
 }
