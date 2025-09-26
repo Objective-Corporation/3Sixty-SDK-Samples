@@ -16,6 +16,8 @@ remote-agent:
       validate-agent-token-rpc: 60
       write-document-request-rpc: 30
       get-extended-document-rpc: 30
+      send-auth-conn-check-result-rpc: 30
+      send-query-response-rpc: 60
   server-url: http://localhost:8080/3sixty-admin
   ssl-config:
     ca-certs:

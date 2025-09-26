@@ -4,8 +4,10 @@ The `remote-agent-example` is an Example of a Remote Agent. It shows how to use
 the [SDK](https://central.sonatype.com/artifact/com.objective.threesixty/threesixty-sdk)
 to connect with the 3Sixty Server.
 
-Following is a detailed, step-by-step guide on creating, registering, and configuring the agent. By following this guide, you can ensure a smooth setup and deployment of your custom connectors using our SDK.
+Following is a detailed, step-by-step guide on creating, registering, and configuring the agent. By following this
+guide, you can ensure a smooth setup and deployment of your custom connectors using our SDK.
 This guide will walk you through:
+
 - Setting up your development environment.
 
 - Creating your custom connector.
@@ -15,27 +17,43 @@ This guide will walk you through:
 - Registering your agent in the 3Sixty platform.
 
 ## How It Works
-You will deploy agents that communicate with your legacy, proprietary, or homegrown applications. These agents will manage the transfer of binaries and metadata from your repository. For each deployed agent, a corresponding agent must be created in the 3Sixty platform.
 
-For example, if you have multiple repositories that you want to connect using the custom framework, you need to register corresponding agents in 3Sixty for each custom connector. Each agent is deployed as a separate Spring application.
+You will deploy agents that communicate with your legacy, proprietary, or homegrown applications. These agents will
+manage the transfer of binaries and metadata from your repository. For each deployed agent, a corresponding agent must
+be created in the 3Sixty platform.
 
-Once your remote agent is up and running, it will securely establish a connection with the 3Sixty server. Upon connection, it operates like any other out-of-the-box connector supported by 3Sixty, leveraging all available tasks and functionalities on the 3Sixty platform.
+For example, if you have multiple repositories that you want to connect using the custom framework, you need to register
+corresponding agents in 3Sixty for each custom connector. Each agent is deployed as a separate Spring application.
+
+Once your remote agent is up and running, it will securely establish a connection with the 3Sixty server. Upon
+connection, it operates like any other out-of-the-box connector supported by 3Sixty, leveraging all available tasks and
+functionalities on the 3Sixty platform.
 
 ## Prerequisites
-Our Remote Agent SDK is built using Java, so you'll need Java 17+ to build a custom connector. Additionally, the Spring framework is required for constructing your custom connector. You can use any IDE you prefer to build the custom connector with our SDK.
-- [Java 17+](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html): Ensure you have Java 17 or higher installed.
+
+Our Remote Agent SDK is built using Java, so you'll need Java 17+ to build a custom connector. Additionally, the Spring
+framework is required for constructing your custom connector. You can use any IDE you prefer to build the custom
+connector with our SDK.
+
+- [Java 17+](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html): Ensure you have Java 17 or
+  higher installed.
 
 - [Spring Framework](https://spring.io/projects/spring-framework#overview): Required for building your custom connector.
 
 - [IDE](https://www.jetbrains.com/idea/): Use your preferred Integrated Development Environment (IDE).
 
-- [Maven 3.8+](https://maven.apache.org/docs/3.8.6/release-notes.html): Required for dependency management and building your project.
+- [Maven 3.8+](https://maven.apache.org/docs/3.8.6/release-notes.html): Required for dependency management and building
+  your project.
 
-- [SDK Availability](https://central.sonatype.com/artifact/com.objective.threesixty/threesixty-sdk): The SDK project is available on Maven Central and can be referenced directly in your POM file.
+- [SDK Availability](https://central.sonatype.com/artifact/com.objective.threesixty/threesixty-sdk): The SDK project is
+  available on Maven Central and can be referenced directly in your POM file.
 
-- [Remote Agent Example Project](https://github.com/Objective-Corporation/3Sixty-SDK-Samples): The remote-agent-example project is an Example of a Remote Agent. It shows how to use the SDK to connect with the 3Sixty Server. Use this project as a referece
+- [Remote Agent Example Project](https://github.com/Objective-Corporation/3Sixty-SDK-Samples): The remote-agent-example
+  project is an Example of a Remote Agent. It shows how to use the SDK to connect with the 3Sixty Server. Use this
+  project as a referece
 
 ## Getting started
+
 1. Configure the two properties in global properties, and also follow Configuring SSL if applicable
     - 3sixty.grpc.server.port=`<PORT>`
 
@@ -45,17 +63,21 @@ Our Remote Agent SDK is built using Java, so you'll need Java 17+ to build a cus
 
 3. Create an integration connection in 3Sixty. [Example](#create-an-integration-connection)
 
-4. Create a Spring Maven application. 
+4. Create a Spring Maven application.
 
 5. Add our SDK as dependency in your pom.xml. [Example](#configuring-the-implementation-project)
 
-6. Add the token and agent name (generated in step 2), to your Spring properties files. See step 2 in [Configuring the Implementation Project](#configuring-the-implementation-project)
+6. Add the token and agent name (generated in step 2), to your Spring properties files. See step 2
+   in [Configuring the Implementation Project](#configuring-the-implementation-project)
 
-7. Configure the connector. Read the readme to understand how to configure the connector. [Example](#configuring-the-connector)
+7. Configure the connector. Read the readme to understand how to configure the
+   connector. [Example](#configuring-the-connector)
 
-8. Implement RepositoryReader and RepositoryWriter interfaces of SDK. For reference see the FileSystemReader and FileSystemWriter.
+8. Implement RepositoryReader and RepositoryWriter interfaces of SDK. For reference see the FileSystemReader and
+   FileSystemWriter.
 
-9. Run the application in Maven. When you run your application, it will connect with 3Sixty-server. [Example](#running-the-remote-agent)
+9. Run the application in Maven. When you run your application, it will connect with
+   3Sixty-server. [Example](#running-the-remote-agent)
 
 10. Return to the 3SixtyUI and create a job. [Example](#create-a-job)
 
@@ -78,12 +100,38 @@ Our Remote Agent SDK is built using Java, so you'll need Java 17+ to build a cus
 <img src="docs/images/3sixty/remote-agent-form.png" alt="Alt text" style="width:40%;">
 
 4. On the Remote Agent List you will see the new remote agent with the `token` generated by 3Sixty
-5. Click the copy icon to copy the `token` and paste it into the `remote-agent.token:` field in the *application.yaml* file. See Step 2
+5. Click the copy icon to copy the `token` and paste it into the `remote-agent.token:` field in the *application.yaml*
+   file. See Step 2
    in [How to Use the SDK](#how-to-use-the-sdk)
 
 *Image 3: New Remote Agent with Token*
 
 <img src="docs/images/3sixty/token-example.png" alt="Alt text" style="width:40%;">
+
+### Create an Authentication Connector
+
+This step is for if an authentication connector is required. If authentication is hardcoded in the implementation
+itself, or does not require
+external authentication (like for a Filesystem connector), then it can be skipped. Otherwise, it provides a good way of
+reusing a Remote
+Agent without setting up hardcoded authentication details.
+
+1. Go to `Connections -> Authentication` in the left navigation menu.
+2. Click `+ Create Auth Connection`.
+3. In the `Connection Type` dropdown, select `Remote Agent Authentication Connector`, and giving the connector a name,
+   click `Save`.
+4. In the new connector, select the remote agent to associate the connector with, and `Save` it.
+5. Going back to the authentication connector, there will be a `Configuration` tab, which contains the fields configured
+   in the remote agent. Fill them out as required.
+
+![img.png](docs/images/3sixty/authentication-connector.png)
+
+6. Test that the connector is working correctly by using the `Test Connection` button to trigger your implemented
+   *AuthConnectionFactory::checkConnection* method.
+
+![img.png](docs/images/3sixty/check-auth-connection.png)
+
+7. You can now use the authentication connector in Integration and Content Service connections
 
 ## Create an Integration Connection
 
@@ -103,7 +151,6 @@ Our Remote Agent SDK is built using Java, so you'll need Java 17+ to build a cus
 *Image 5: Edit New Integration Connection*
 
 <img src="docs/images/3sixty/edit-connection.png" alt="Alt text" style="width:40%;">
-
 
 ## Configuring the Implementation Project
 
@@ -136,8 +183,11 @@ Our Remote Agent SDK is built using Java, so you'll need Java 17+ to build a cus
             - `share-document-rpc:` Maximum wait time for sending a document from the repository
             - `send-deletion-response-rpc:` Maximum wait time for deleting a document from the repository
             - `validate-agent-token-rpc:` Maximum wait time for validating remote agent tokens
-            - `write-document-request-rpc`: Maximum wait time for the remote agent to send the written document details back to 3Sixty
-            - `get-extended-document-rpc`: Maximum wait time for the remote agent to get the document and its metadata from cached document from the source repository
+            - `write-document-request-rpc`: Maximum wait time for the remote agent to send the written document details
+              back to 3Sixty
+            - `get-extended-document-rpc`: Maximum wait time for the remote agent to get the document and its metadata
+              from cached document from the source repository
+            - `check-auth-connection-rpc`: Maximum wait time for authentication connection checks
     - `server-url:` REST URL to connect with the 3Sixty server, including the protocol
     - `ssl-config:`
         - `ca-certs:`
@@ -148,13 +198,15 @@ Contact the 3Sixty team to get the host, port and url.
 
 3. In your application, scan for SDK beans and components. You can do this by using the `@ComponentScan` annotation in
    your Main class.
-    - See the *Application.java* file for reference.
+    - See *Application.java* for reference.
 4. Implement the SDK's *ConnectorForm.java* interface.
-    - See the *FileSystemConnectorForm.java* for reference.
+    - See *FileSystemConnectorForm.java* for reference.
 5. Then implement the SDK'S *RepositoryReader.java* interface.
-    - See the *FileSystemReader.java* for reference.
-6. Also implement the SDK's *RepositoryWriter.java* interface
-    - See the *FileSystemWriter.java* for reference
+    - See *FileSystemReader.java* for reference.
+6. Implement the SDK's *RepositoryWriter.java* interface
+    - See *FileSystemWriter.java* for reference
+7. Also implement the *AuthConnectionFactory.java* interface.
+    - See *FileSystemAuthConnFactory.java* for reference
 
 ## Configuring the Connector
 
@@ -200,11 +252,33 @@ public List<Field> getContentServiceFields() {
             .build();
     return List.of(toggleCheckbox, textField);
 }
+
+@Override
+public List<Field> getAuthConnectionFields() {
+    return List.of(Field.newBuilder()
+        .setLabel("Does nothing")
+        .setId("textField")
+        .setDescription("Does nothing")
+        .setTextField(TextField.newBuilder().build())
+        .build());
+}
+
+@Override
+public List<Field> getSearchConnectionFields() {
+    return List.of(Field.newBuilder()
+        .setLabel("Does nothing")
+        .setId("textField")
+        .setDescription("Does nothing")
+        .setTextField(TextField.newBuilder().build())
+        .build());
+}
 ```
 
-In the above code, we are configuring a **Text Field** to create a File Path in 3Sixty Server for both the source, and output job repositories. 
-We are also adding a pair of fields to the Content Service custom fields. The first field creates a checkbox. The second creates a 
-string field that can be shown/hidden using the checkbox.
+In the above code, we are configuring a **Text Field** to create a File Path in 3Sixty Server for both the source, and
+output job repositories.
+We are also adding a pair of fields to the Content Service custom fields. The first field creates a checkbox. The second
+creates a string field that can be shown/hidden using the checkbox. Similarly, for the authentication connection and
+search connection fields, there is a simple text field.
 
 ## Running the Remote Agent
 
@@ -221,15 +295,20 @@ string field that can be shown/hidden using the checkbox.
 Then you can run the jar file using the command prompt `java –jar remote-agent-example.jar`
 
 ### Create a Content Service Connection
+
 This step is needed when you are running a Manage In Place job.
+
 1. Go to `Connections -> Content Service` in the left navigation menu.
 2. Click on the `blue plus` sign to create a new Content Service connection.
 3. In the `Type` dropdown, select `Remote Agent Content Service Connector`.
 
-   In the Remote Agent Content Service Connector dropdown, select your Remote Agent.
-4. If you have any parameters for your Content Service implementation, you can add them in the `Connection Configuration` tab.
+   In the Remote Agent Content Service Connector dropdown, select your Remote Agent, and also set `Security Mode` to
+   `Authentication Connection` and select your matching connector if you require an authentication connector.
+4. If you have any parameters for your Content Service implementation, you can add them in the
+   `Connection Configuration` tab.
 
-   Select `Add Custom Parameter` to add extra parameters on top of the fields which you may have set up in your `ConnectorForm` implementation.
+   Select `Add Custom Parameter` to add extra parameters on top of the fields which you may have set up in your
+   `ConnectorForm` implementation.
 
    These parameters can be accessed as `CustomParameters` in the remote agent SDK.
 5. Save the Content Service Connection.
@@ -238,6 +317,23 @@ This step is needed when you are running a Manage In Place job.
 
 <img src="docs/images/3sixty/content-service-creation.png" alt="Alt text" style="width:40%;">
 
+### Create a Content Search Connection
+
+1. Go to `Connections -> Content Search` in the navigation menu.
+2. Create a Content Search Connection
+3. In the `Type` dropdown, select `Remote Agent Search Connector`.
+
+   In the Remote Agent Content Service Connector dropdown, select your Remote Agent, and also set `Security Mode` to
+   `Authentication Connection` and select your matching connector if you require an authentication connector.
+4. Go to the `Connection Configuration` tag and select your Remote Agent
+5. If you have any parameters for your Content Search implementation, you can add them in the
+   `Connection Configuration` tab.
+
+   Select `Add Custom Parameter` to add extra parameters on top of the fields which you may have set up in your
+   `ConnectorForm` implementation.
+
+   These parameters can be accessed as `CustomParameters` in the remote agent SDK.
+6. Save the Content Search Connection.
 
 ## Create a Job
 
@@ -276,7 +372,9 @@ In this example we will be moving files from the Remote Agent connector to a Fil
 
 ## Configuring SSL for Tomcat REST server
 
-If your Tomcat application (`serverUrl`) is configured to use SSL (as specified in Tomcat's *server.xml* and indicated by the HTTPS protocol), then you will need to export the root CA certificate from the Tomcat keystore and into the truststore in *%JAVA_HOME%\lib\security\cacerts*.
+If your Tomcat application (`serverUrl`) is configured to use SSL (as specified in Tomcat's *server.xml* and indicated
+by the HTTPS protocol), then you will need to export the root CA certificate from the Tomcat keystore and into the
+truststore in *%JAVA_HOME%\lib\security\cacerts*.
 
 ## Configuring SSL for gRPC server
 

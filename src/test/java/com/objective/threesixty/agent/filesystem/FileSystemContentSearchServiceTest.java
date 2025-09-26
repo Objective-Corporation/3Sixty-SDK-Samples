@@ -1,4 +1,4 @@
-package com.objective.threesixty.agent;
+package com.objective.threesixty.agent.filesystem;
 
 /*-
  * %%
@@ -26,14 +26,26 @@ package com.objective.threesixty.agent;
  * %-
  */
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import com.objective.threesixty.ObjectiveAuthConn;
+import com.objective.threesixty.remoteagent.sdk.agent.AuthConnection;
+import com.objective.threesixty.remoteagent.sdk.utils.CustomParameters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@SpringBootApplication
-@ComponentScan(basePackages = {"com.objective.threesixty", "com.objective.threesixty.remoteagent.sdk"})
-public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class FileSystemContentSearchServiceTest {
+    private FileSystemContentSearchService searchService;
+
+    @BeforeEach
+    void setUp() {
+        searchService = new FileSystemContentSearchService();
+    }
+
+    @Test
+    void runQuery() {
+        assertEquals("", searchService.runQuery(new AuthConnection(ObjectiveAuthConn.newBuilder().build()), "", "", new CustomParameters(Map.of())));
     }
 }

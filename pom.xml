@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>3.5.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -42,11 +42,11 @@
     </scm>
 
     <properties>
-        <revision>1.5.0</revision>
+        <revision>1.6.0</revision>
         <sha1></sha1>
-        <changelist>-SNAPSHOT</changelist>
+        <changelist></changelist>
 
-        <threesixty.sdk.version>1.5.0</threesixty.sdk.version>
+        <threesixty.sdk.version>1.6.0</threesixty.sdk.version>
         <java.version>17</java.version>
     </properties>
 
@@ -142,5 +142,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

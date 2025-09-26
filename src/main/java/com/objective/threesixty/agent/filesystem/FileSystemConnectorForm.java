@@ -87,4 +87,24 @@ public class FileSystemConnectorForm implements ConnectorForm {
             .build();
         return List.of(toggleCheckbox, textField, numberField);
     }
+
+    @Override
+    public List<Field> getAuthConnectionFields() {
+        return List.of(Field.newBuilder()
+            .setLabel("Does nothing")
+            .setId("textField")
+            .setDescription("Does nothing")
+            .setTextField(TextField.newBuilder().build())
+            .build());
+    }
+
+    @Override
+    public List<Field> getSearchConnectionFields() {
+        return List.of(Field.newBuilder()
+            .setLabel("Does nothing")
+            .setId("textField")
+            .setDescription("Does nothing")
+            .setTextField(TextField.newBuilder().build())
+            .build());
+    }
 }

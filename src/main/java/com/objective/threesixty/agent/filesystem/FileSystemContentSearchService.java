@@ -1,4 +1,4 @@
-package com.objective.threesixty.agent;
+package com.objective.threesixty.agent.filesystem;
 
 /*-
  * %%
@@ -26,14 +26,16 @@ package com.objective.threesixty.agent;
  * %-
  */
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import com.objective.threesixty.remoteagent.sdk.agent.AuthConnection;
+import com.objective.threesixty.remoteagent.sdk.agent.ContentSearchService;
+import com.objective.threesixty.remoteagent.sdk.utils.CustomParameters;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication
-@ComponentScan(basePackages = {"com.objective.threesixty", "com.objective.threesixty.remoteagent.sdk"})
-public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+@Component
+public class FileSystemContentSearchService implements ContentSearchService {
+    @Override
+    public String runQuery(AuthConnection authConn, String collection, String searchString, CustomParameters params) {
+        // Filesystem does not use content search
+        return "";
     }
 }

@@ -1,4 +1,4 @@
-package com.objective.threesixty.agent;
+package com.objective.threesixty.agent.filesystem;
 
 /*-
  * %%
@@ -26,14 +26,39 @@ package com.objective.threesixty.agent;
  * %-
  */
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import com.objective.threesixty.remoteagent.sdk.agent.AuthConnection;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@SpringBootApplication
-@ComponentScan(basePackages = {"com.objective.threesixty", "com.objective.threesixty.remoteagent.sdk"})
-public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class FileSystemAuthConnFactoryTest {
+    private FileSystemAuthConnFactory factory;
+    private AuthConnection authConn;
+
+    @BeforeEach
+    void setUp() {
+        authConn = new AuthConnection("testId", new HashMap<>());
+        factory = new FileSystemAuthConnFactory();
+    }
+
+    @Test
+    void testRegister() {
+        authConn = new AuthConnection("testId", new HashMap<>());
+        factory.register(authConn);
+
+        assertTrue(factory.getAuthConnections().contains(authConn));
+    }
+
+    @Test
+    void testCheckConnection() {
+        authConn = new AuthConnection("testId", new HashMap<>());
+        String result = factory.checkConnection(authConn);
+
+        assertTrue(factory.getAuthConnections().contains(authConn));
+        assertEquals("", result);
     }
 }

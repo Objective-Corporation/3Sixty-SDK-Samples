@@ -12,10 +12,10 @@ package com.objective.threesixty.agent.filesystem;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -80,10 +80,10 @@ class FileSystemReaderTest {
 
     @Test
     void testGetDocument() {
-        File file = loadTestDoc();
+        File file = loadTestFile("TestDirectory/TestDoc.txt");
         String docId = file.getPath();
 
-        Document doc = fileSystemReader.getDocument(docId, customParameters);
+        Document doc = fileSystemReader.getDocument(docId, customParameters, null);
         assertNotNull(doc);
         assertEquals(docId, doc.getId());
         assertEquals(file.getName(), doc.getName());
@@ -92,14 +92,14 @@ class FileSystemReaderTest {
     }
 
     @Test
-    void testGetDocuments_directory() {
-        File file = loadTestDoc();
+    void testGetDocuments_directory_noSubfolders() {
+        File file = loadTestFile("TestDirectory/TestSubfolder/TestDoc2.txt");
         String docId = file.getPath();
         String filePath = file.getParent();
         customParameters.put("filePath", Value.newBuilder().setString(filePath).build());
 
         try {
-            Stream<Document> docs = fileSystemReader.getDocuments(customParameters);
+            Stream<Document> docs = fileSystemReader.getDocuments(customParameters, null);
             List<Document> docsList = docs.toList();
             assertNotNull(docsList);
             assertEquals(1, docsList.size());
@@ -115,13 +115,45 @@ class FileSystemReaderTest {
     }
 
     @Test
+    void testGetDocuments_directory_withSubfolders() {
+        File file = loadTestFile("TestDirectory/TestDoc.txt");
+        String docId = file.getPath();
+        String filePath = file.getParent();
+        File file2 = loadTestFile("TestDirectory/TestSubfolder/TestDoc2.txt");
+        String doc2Id = file2.getPath();
+
+        customParameters.put("filePath", Value.newBuilder().setString(filePath).build());
+
+        try {
+            Stream<Document> docs = fileSystemReader.getDocuments(customParameters, null);
+            List<Document> docsList = docs.toList();
+            assertNotNull(docsList);
+            assertEquals(2, docsList.size());
+            Document doc = docsList.get(0);
+            assertNotNull(doc);
+            assertEquals(docId, doc.getId());
+            assertEquals(file.getName(), doc.getName());
+            assertEquals(TEXT_PLAIN_VALUE, doc.getMimeType());
+            assertEquals(file.length(), doc.getSize());
+            Document doc2 = docsList.get(1);
+            assertNotNull(doc2);
+            assertEquals(doc2Id, doc2.getId());
+            assertEquals(file2.getName(), doc2.getName());
+            assertEquals(TEXT_PLAIN_VALUE, doc2.getMimeType());
+            assertEquals(file2.length(), doc2.getSize());
+        } catch (Exception e) {
+            fail("Should not throw an exception", e);
+        }
+    }
+
+    @Test
     void testGetDocuments_singleFile() {
-        File file = loadTestDoc();
+        File file = loadTestFile("TestDirectory/TestDoc.txt");
         String docId = file.getPath();
         customParameters.put("filePath", Value.newBuilder().setString(docId).build());
 
         try {
-            Stream<Document> docs = fileSystemReader.getDocuments(customParameters);
+            Stream<Document> docs = fileSystemReader.getDocuments(customParameters, null);
             List<Document> docsList = docs.toList();
             assertNotNull(docsList);
             assertEquals(1, docsList.size());
@@ -138,7 +170,7 @@ class FileSystemReaderTest {
 
     @Test
     void testGetDocuments_singleFile_outside_date_range() {
-        File file = loadTestDoc();
+        File file = loadTestFile("TestDirectory/TestDoc.txt");
         String docId = file.getPath();
         customParameters.put("filePath", Value.newBuilder().setString(docId).build());
         // Mon Jul 05 2021 17:42:40.301
@@ -148,7 +180,7 @@ class FileSystemReaderTest {
         customParameters.put(ReservedIdentifier.END_TIME.getName(), Value.newBuilder().setLong(1635506960301L).build());
 
         try {
-            Stream<Document> docs = fileSystemReader.getDocuments(customParameters);
+            Stream<Document> docs = fileSystemReader.getDocuments(customParameters, null);
             List<Document> docsList = docs.toList();
             assertNotNull(docsList);
             assertEquals(0, docsList.size());
@@ -159,11 +191,11 @@ class FileSystemReaderTest {
 
     @Test
     void testGetDocumentMetadata() {
-        File file = loadTestDoc();
+        File file = loadTestFile("TestDirectory/TestDoc.txt");
         String docId = file.getPath();
 
         try {
-            Map<String, MetadataType> actualMetadata = fileSystemReader.getDocumentMetadata(docId, customParameters);
+            Map<String, MetadataType> actualMetadata = fileSystemReader.getDocumentMetadata(docId, customParameters, null);
             assertEquals("TestDoc.txt", actualMetadata.get("fileName").getString());
             assertEquals(5, actualMetadata.get("fileSize").getLong());
         } catch (Exception e) {
@@ -173,11 +205,11 @@ class FileSystemReaderTest {
 
     @Test
     void testGetDocumentBinary_success() {
-        File file = loadTestDoc();
+        File file = loadTestFile("TestDirectory/TestDoc.txt");
         String docId = file.getPath();
 
         try {
-            BinaryDetails bd = fileSystemReader.getDocumentBinary(docId, customParameters);
+            BinaryDetails bd = fileSystemReader.getDocumentBinary(docId, customParameters, null);
             assertEquals(docId, bd.getDocumentId());
             assertEquals(TEXT_PLAIN_VALUE, bd.getMimeType());
             assertEquals(5, bd.getInputStream().readAllBytes().length);
@@ -192,7 +224,7 @@ class FileSystemReaderTest {
         String docId = "nonExistentFile.txt";
 
         try {
-            BinaryDetails bd = fileSystemReader.getDocumentBinary(docId, customParameters);
+            BinaryDetails bd = fileSystemReader.getDocumentBinary(docId, customParameters, null);
             assertEquals(docId, bd.getDocumentId());
             assertEquals(TEXT_PLAIN_VALUE, bd.getMimeType());
             assertEquals(0, bd.getInputStream().readAllBytes().length);
@@ -216,7 +248,7 @@ class FileSystemReaderTest {
     void testDeleteDocument_failsWith_NoSuchFileException() {
         String docId = "nonExistentFile.txt";
 
-        Exception exception = assertThrows(NoSuchFileException.class, () -> fileSystemReader.deleteDocument(docId, customParameters));
+        Exception exception = assertThrows(NoSuchFileException.class, () -> fileSystemReader.deleteDocument(docId, customParameters, null));
         assertTrue(exception.getMessage().contains("nonExistentFile.txt"));
     }
 
@@ -228,7 +260,7 @@ class FileSystemReaderTest {
         Files.createFile(tempFile.resolve("fileInsideDirectory.txt"));
         String docId = tempFile.toString();
 
-        Exception exception = assertThrows(DirectoryNotEmptyException.class, () -> fileSystemReader.deleteDocument(docId, customParameters));
+        Exception exception = assertThrows(DirectoryNotEmptyException.class, () -> fileSystemReader.deleteDocument(docId, customParameters, null));
         assertTrue(exception.getMessage().contains("nonEmptyDirectory"));
     }
 
@@ -242,7 +274,7 @@ class FileSystemReaderTest {
             mockedFiles.when(() -> Files.delete(Paths.get(docId)))
                 .thenThrow(new IOException("Fake file in use exception"));
 
-            Exception exception = assertThrows(IOException.class, () -> fileSystemReader.deleteDocument(docId, customParameters));
+            Exception exception = assertThrows(IOException.class, () -> fileSystemReader.deleteDocument(docId, customParameters, null));
             assertTrue(exception.getMessage().contains("Fake file in use exception"));
         }
     }
@@ -257,7 +289,7 @@ class FileSystemReaderTest {
             mockedFiles.when(() -> Files.delete(Paths.get(docId)))
                 .thenThrow(new SecurityException("Delete operation not allowed"));
 
-            Exception exception = assertThrows(SecurityException.class, () -> fileSystemReader.deleteDocument(docId, customParameters));
+            Exception exception = assertThrows(SecurityException.class, () -> fileSystemReader.deleteDocument(docId, customParameters, null));
             assertTrue(exception.getMessage().contains("Delete operation not allowed"));
         }
     }
@@ -269,7 +301,7 @@ class FileSystemReaderTest {
             String docId = tempFile.toFile().getPath();
 
             customParameters.put(ReservedIdentifier.ALL_VERSIONS_PARAM.getName(), ValueUtils.booleanValue(allVersions));
-            fileSystemReader.deleteDocument(docId, customParameters);
+            fileSystemReader.deleteDocument(docId, customParameters, null);
 
             assertFalse(Files.exists(tempFile));
         } catch (Exception e) {
@@ -277,10 +309,9 @@ class FileSystemReaderTest {
         }
     }
 
-    private File loadTestDoc() {
-        String fileName = "TestDoc.txt";
-        URL fileAsUrl = getClass().getClassLoader().getResource("testFiles/" + fileName);
-        assertNotNull(fileAsUrl, "Could not find file in resources folder: " + fileName);
+    private File loadTestFile(String path) {
+        URL fileAsUrl = getClass().getClassLoader().getResource(path);
+        assertNotNull(fileAsUrl, "Could not find file in resources folder: " + path);
         return new File(fileAsUrl.getFile());
     }
 }
