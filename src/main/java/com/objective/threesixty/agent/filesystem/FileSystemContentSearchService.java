@@ -26,6 +26,7 @@ package com.objective.threesixty.agent.filesystem;
  * %-
  */
 
+import com.objective.threesixty.RunApiResponse;
 import com.objective.threesixty.remoteagent.sdk.agent.AuthConnection;
 import com.objective.threesixty.remoteagent.sdk.agent.ContentSearchService;
 import com.objective.threesixty.remoteagent.sdk.utils.CustomParameters;
@@ -37,5 +38,10 @@ public class FileSystemContentSearchService implements ContentSearchService {
     public String runQuery(AuthConnection authConn, String collection, String searchString, CustomParameters params) {
         // Filesystem does not use content search
         return "";
+    }
+
+    @Override
+    public RunApiResponse runApi(AuthConnection authConn, String method, String endpoint, String queryParams, String body, CustomParameters params) {
+        return null;
     }
 }

@@ -78,7 +78,7 @@ public class FileSystemReader implements RepositoryReader {
     @SneakyThrows
     @Override
     public Stream<Document> getDocuments(CustomParameters parameters, AuthConnection conn) {
-        String filePath = parameters.get("filePath").getString();
+        String filePath = parameters.get("sourceFilePath").getString();
         Path directory = Paths.get(filePath);
 
         if (!Files.isDirectory(directory)) {

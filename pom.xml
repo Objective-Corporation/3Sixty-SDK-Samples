@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.5</version>
+        <version>3.5.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -42,13 +42,29 @@
     </scm>
 
     <properties>
-        <revision>1.6.0</revision>
+        <revision>1.7.0</revision>
         <sha1></sha1>
         <changelist></changelist>
 
-        <threesixty.sdk.version>1.6.0</threesixty.sdk.version>
+        <threesixty.sdk.version>1.7.0</threesixty.sdk.version>
         <java.version>17</java.version>
     </properties>
+
+    <dependencyManagement>
+        <!-- Addresses CVE-2025-11226, can remove once spring-boot-starter-parent fixes this -->
+        <dependencies>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.5.19</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.5.19</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>

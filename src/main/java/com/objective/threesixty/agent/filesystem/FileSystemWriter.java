@@ -71,7 +71,7 @@ public class FileSystemWriter implements RepositoryWriter {
 
     private File createOutputFile(Document doc, CustomParameters params) {
         return Paths.get(
-            params.get("filePath").getString(),
+            params.get("outFilePath").getString(),
             sanitizePath(doc.getParentPath()),
             doc.getName()
         ).toFile();
