@@ -66,7 +66,7 @@ class FileSystemWriterTest {
         Path sourcePath = tempDir.resolve("sourceDir");
         Files.createDirectory(sourcePath);
 
-        valueMap.put("filePath", Value.newBuilder().setId("filePath").setString(sourcePath.getParent().toString()).build());
+        valueMap.put("outFilePath", Value.newBuilder().setId("outFilePath").setString(sourcePath.getParent().toString()).build());
         customParameters = new CustomParameters(valueMap);
     }
 
@@ -78,7 +78,7 @@ class FileSystemWriterTest {
         Document sourceDoc = createDocument();
         Document result = writer.writeDocument(sourceDoc, createMetadata(), dataBufferFlux, customParameters, null).block();
         String newPath = Paths.get(
-            customParameters.get("filePath").getString(),
+            customParameters.get("outFilePath").getString(),
             writer.sanitizePath(sourceDoc.getParentPath())
         ).toString();
         assertEquals(sourceDoc.toBuilder()

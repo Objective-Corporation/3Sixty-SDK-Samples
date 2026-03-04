@@ -49,7 +49,7 @@ class FileSystemConnectorFormTest {
         assertNotEquals(0, formConfig.getRepoFieldsCount());
         Field field = formConfig.getRepoFields(0);
         assertEquals("File Path", field.getLabel());
-        assertEquals("filePath", field.getId());
+        assertEquals("sourceFilePath", field.getId());
     }
 
     @Test
@@ -63,7 +63,7 @@ class FileSystemConnectorFormTest {
         assertNotEquals(0, formConfig.getOutputFieldsCount());
         Field field = formConfig.getOutputFields(0);
         assertEquals("Output File Path", field.getLabel());
-        assertEquals("filePath", field.getId());
+        assertEquals("outFilePath", field.getId());
     }
 
     @Test

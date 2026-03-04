@@ -42,7 +42,7 @@ public class FileSystemConnectorForm implements ConnectorForm {
         // File Path
         Field filePath = Field.newBuilder()
             .setLabel("File Path")
-            .setId("filePath")
+            .setId("sourceFilePath")
             .setTextField(TextField.newBuilder().build())
             .build();
 
@@ -54,7 +54,7 @@ public class FileSystemConnectorForm implements ConnectorForm {
         // File Path
         Field filePath = Field.newBuilder()
             .setLabel("Output File Path")
-            .setId("filePath")
+            .setId("outFilePath")
             .setTextField(TextField.newBuilder().build())
             .build();
         Field metadataAsXml = Field.newBuilder()

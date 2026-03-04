@@ -81,6 +81,13 @@ connector with our SDK.
 
 10. Return to the 3SixtyUI and create a job. [Example](#create-a-job)
 
+## Reloading application.yaml during runtime
+
+As of SDK 1.7.0, you can reload the *application.yaml* when the agent has started but has not successfully connected to
+3Sixty yet.
+To do this, after updating your *application.yaml*, call the `/actuator/refresh` endpoint on your remote agent to reload
+the configuration.
+
 ## Creating a Remote Agent Token
 
 ### Step 1: Create an Agent:
@@ -188,11 +195,17 @@ Agent without setting up hardcoded authentication details.
             - `get-extended-document-rpc`: Maximum wait time for the remote agent to get the document and its metadata
               from cached document from the source repository
             - `check-auth-connection-rpc`: Maximum wait time for authentication connection checks
+            - `send-query-response-rpc`: Maximum wait time for search connection query calls
+            - `send-run-api-response-rpc`: Maximum wait time for remote run API calls
     - `server-url:` REST URL to connect with the 3Sixty server, including the protocol
     - `ssl-config:`
         - `ca-certs:`
             - `password:` Password to the certificate authority
         - `enabled:` `false` to use plaintext, or `true` to use SSL
+    - `binaryUpload:`
+        - `chunkSizeMb:` The maximum size of a chunk to send to 3Sixty when uploading binaries
+        - `concurrentUploads:` The maximum number of concurrent binary chunk uploads to 3Sixty per document.
+          Lower values reduce memory usage but may slow uploads on high-latency networks
 
 Contact the 3Sixty team to get the host, port and url.
 
@@ -201,12 +214,14 @@ Contact the 3Sixty team to get the host, port and url.
     - See *Application.java* for reference.
 4. Implement the SDK's *ConnectorForm.java* interface.
     - See *FileSystemConnectorForm.java* for reference.
-5. Then implement the SDK'S *RepositoryReader.java* interface.
+5. Implement the SDK'S *RepositoryReader.java* interface.
     - See *FileSystemReader.java* for reference.
 6. Implement the SDK's *RepositoryWriter.java* interface
     - See *FileSystemWriter.java* for reference
-7. Also implement the *AuthConnectionFactory.java* interface.
+7. Implement the *AuthConnectionFactory.java* interface.
     - See *FileSystemAuthConnFactory.java* for reference
+7. Implement the *ContentSearchService.java* interface.
+    - See *FileSystemContentSearchService.java* for reference
 
 ## Configuring the Connector
 
@@ -216,9 +231,9 @@ In the implementation of the `ConnectorForm.java` interface, you can configure t
 @Override
 public List<Field> getSourceRepositoryFields() {
     // File Path
-    Field filePath = Field.newBuilder()
+    Field sourceFilePath = Field.newBuilder()
             .setLabel("File Path")
-            .setId("filePath")
+            .setId("sourceFilePath")
             .setTextField(TextField.newBuilder().build())
             .build();
     return List.of(filePath);
@@ -229,7 +244,7 @@ public List<Field> getOutputRepositoryFields() {
     // File Path
     Field filePath = Field.newBuilder()
         .setLabel("Output File Path")
-        .setId("filePath")
+        .setId("outFilePath")
         .setTextField(TextField.newBuilder().build())
         .build();
     return List.of(filePath);
@@ -331,8 +346,6 @@ This step is needed when you are running a Manage In Place job.
 
    Select `Add Custom Parameter` to add extra parameters on top of the fields which you may have set up in your
    `ConnectorForm` implementation.
-
-   These parameters can be accessed as `CustomParameters` in the remote agent SDK.
 6. Save the Content Search Connection.
 
 ## Create a Job

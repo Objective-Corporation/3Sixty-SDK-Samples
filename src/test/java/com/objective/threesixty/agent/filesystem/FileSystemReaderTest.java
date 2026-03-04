@@ -96,7 +96,7 @@ class FileSystemReaderTest {
         File file = loadTestFile("TestDirectory/TestSubfolder/TestDoc2.txt");
         String docId = file.getPath();
         String filePath = file.getParent();
-        customParameters.put("filePath", Value.newBuilder().setString(filePath).build());
+        customParameters.put("sourceFilePath", Value.newBuilder().setString(filePath).build());
 
         try {
             Stream<Document> docs = fileSystemReader.getDocuments(customParameters, null);
@@ -122,7 +122,7 @@ class FileSystemReaderTest {
         File file2 = loadTestFile("TestDirectory/TestSubfolder/TestDoc2.txt");
         String doc2Id = file2.getPath();
 
-        customParameters.put("filePath", Value.newBuilder().setString(filePath).build());
+        customParameters.put("sourceFilePath", Value.newBuilder().setString(filePath).build());
 
         try {
             Stream<Document> docs = fileSystemReader.getDocuments(customParameters, null);
@@ -150,7 +150,7 @@ class FileSystemReaderTest {
     void testGetDocuments_singleFile() {
         File file = loadTestFile("TestDirectory/TestDoc.txt");
         String docId = file.getPath();
-        customParameters.put("filePath", Value.newBuilder().setString(docId).build());
+        customParameters.put("sourceFilePath", Value.newBuilder().setString(docId).build());
 
         try {
             Stream<Document> docs = fileSystemReader.getDocuments(customParameters, null);
@@ -172,7 +172,7 @@ class FileSystemReaderTest {
     void testGetDocuments_singleFile_outside_date_range() {
         File file = loadTestFile("TestDirectory/TestDoc.txt");
         String docId = file.getPath();
-        customParameters.put("filePath", Value.newBuilder().setString(docId).build());
+        customParameters.put("sourceFilePath", Value.newBuilder().setString(docId).build());
         // Mon Jul 05 2021 17:42:40.301
         customParameters.put(ReservedIdentifier.START_TIME.getName(), Value.newBuilder().setLong(1625506960301L).build());
 

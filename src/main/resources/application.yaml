@@ -18,11 +18,15 @@ remote-agent:
       get-extended-document-rpc: 30
       send-auth-conn-check-result-rpc: 30
       send-query-response-rpc: 60
+      send-run-api-response-rpc: 180
   server-url: http://localhost:8080/3sixty-admin
   ssl-config:
     ca-certs:
       password: changeit
     enabled: true
+  binaryUpload:
+    chunkSizeMb: 32
+    concurrentUploads: 3
 
 logging:
   level:
